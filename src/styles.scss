@@ -1,1 +1,39 @@
 /* You can add global styles to this file, and also import other style files */
+body {
+  margin: 0px;
+  background-color: #F5F5F5;
+
+  mat-card {
+    height: 100%;
+    width: 30rem;
+    border: solid 0.1rem;
+    border-color: #622842;
+    background: #F5F5F5 !important;
+
+    .mat-card-content {
+
+      form {
+        width: 95%;
+        font-size: 18px;
+      }
+
+      .button {
+        color: #622842;
+
+        button {
+          font-size: 22px;
+        }
+
+        button:hover {
+          background-color: #e0e0e0;
+        }
+      }
+    }
+
+    .mat-card-title {
+      font-size: 28px;
+      color: #622842;
+    }
+  }
+
+}
