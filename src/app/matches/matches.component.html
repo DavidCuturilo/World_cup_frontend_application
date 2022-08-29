@@ -1,0 +1,41 @@
+<div class="head">
+  <div class="headline">
+    <h1>Matches</h1>
+  </div>
+  <div class="select">
+    <span class="selected-round">By round: </span>
+    <mat-form-field appearance="fill">
+      <mat-select [(value)]="selected">
+        <mat-option *ngFor="let round of rounds" [value]="round.value" (click)="getMatchesByRound(round.value)">
+          {{round.value}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+</div>
+<div class="round">
+  <div class="group" *ngFor="let group of events">
+    <div class="group-info">
+      <img src="../../assets/logo.png" alt="" />
+      <span class="group-title">{{ group.tournament.name }}</span>
+    </div>
+    <div class="match">
+      <div class="timestamp">
+        <span class="day">{{ getDate(group.startTimestamp) }}</span>
+        <span> | </span>
+        <span class="time">{{ getTime(group.startTimestamp) }}</span>
+      </div>
+      <div class="match-info">
+        <div class="team">
+          <img [src]="getImage(group.homeTeam.nameCode)" alt="" />
+          <span class="team-name">{{ group.homeTeam.name }}</span>
+        </div>
+        <span class="vs">vs</span>
+        <div class="team">
+          <span class="away-team-name">{{ group.awayTeam.name }}</span>
+          <img [src]="getImage(group.awayTeam.nameCode)" alt="" />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

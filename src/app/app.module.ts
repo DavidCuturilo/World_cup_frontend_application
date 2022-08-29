@@ -16,11 +16,13 @@ import { FooterComponent } from './footer/footer.component';
 import { Routes, RouterModule } from '@angular/router';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { StandingsComponent } from './standings/standings.component';
+import { MatchesComponent } from './matches/matches.component';
 
 const appRoutes: Routes = [
   { path: 'signIn', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'standings', component: StandingsComponent },
+  { path: 'matches', component: MatchesComponent },
 ];
 @NgModule({
   declarations: [
@@ -30,6 +32,7 @@ const appRoutes: Routes = [
     HeaderComponent,
     FooterComponent,
     StandingsComponent,
+    MatchesComponent,
   ],
   imports: [
     BrowserModule,

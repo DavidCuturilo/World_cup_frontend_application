@@ -1,0 +1,111 @@
+.head {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin-top: 2rem;
+
+  .headline {
+    color: #622842;
+  }
+
+  .select {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .selected-round {
+      margin-right: 1rem;
+      font-size: 1.5rem;
+      color: #622842;
+    }
+  }
+
+}
+
+.round {
+  display: flex;
+  flex-wrap: wrap;
+  width: 80%;
+  margin-left: 15%;
+
+  .group {
+    margin: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 45%;
+    -webkit-box-shadow: 0px 0px 5px 0px rgba(98, 40, 66, 1);
+    -moz-box-shadow: 0px 0px 5px 0px rgba(98, 40, 66, 1);
+    box-shadow: 0px 0px 5px 0px rgba(98, 40, 66, 1);
+    border-radius: 1rem;
+
+    .group-info {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-bottom: solid 0.1rem;
+      border-color: #622842;
+      color: #622842;
+      margin: 0.8rem;
+
+      .group-title {
+        font-size: 1.7rem;
+      }
+
+      img {
+        height: 2.5rem;
+      }
+    }
+
+    .match {
+      width: 90%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 1rem;
+
+      .timestamp {
+        width: 40%;
+        display: flex;
+        justify-content: space-evenly;
+        align-items: center;
+        font-size: 1.1rem;
+      }
+
+      .match-info {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .team {
+          width: 50%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+
+          .team-name {
+            font-size: 1.2rem;
+            width: 50%;
+          }
+
+          .away-team-name {
+            @extend .team-name;
+            text-align: end;
+          }
+
+          img {
+            height: 1.5rem;
+            margin: 0.2rem;
+          }
+        }
+
+        .vs {
+          width: 7%;
+        }
+      }
+    }
+  }
+}
