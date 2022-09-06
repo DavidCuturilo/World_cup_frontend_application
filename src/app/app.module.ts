@@ -13,17 +13,12 @@ import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { HeaderComponent } from './header/header.component';
 import { FooterComponent } from './footer/footer.component';
-import { Routes, RouterModule } from '@angular/router';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { StandingsComponent } from './standings/standings.component';
 import { MatchesComponent } from './matches/matches.component';
+import { ScoreboardComponent } from './scoreboard/scoreboard.component';
+import { AuthInterceptor } from './interceptors/auth.interceptor';
 
-const appRoutes: Routes = [
-  { path: 'signIn', component: LoginComponent },
-  { path: 'register', component: RegisterComponent },
-  { path: 'standings', component: StandingsComponent },
-  { path: 'matches', component: MatchesComponent },
-];
 @NgModule({
   declarations: [
     AppComponent,
@@ -33,6 +28,7 @@ const appRoutes: Routes = [
     FooterComponent,
     StandingsComponent,
     MatchesComponent,
+    ScoreboardComponent,
   ],
   imports: [
     BrowserModule,
@@ -41,11 +37,11 @@ const appRoutes: Routes = [
     MaterialModule,
     ReactiveFormsModule,
     BrowserAnimationsModule,
-    RouterModule.forRoot(appRoutes),
     HttpClientModule,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: ResponseInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     EnvServiceProvider
   ],
   bootstrap: [AppComponent],

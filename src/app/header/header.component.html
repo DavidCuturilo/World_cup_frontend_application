@@ -4,9 +4,11 @@
     <span>World cup Qatar 2022</span>
   </div>
   <div class="nav-items">
-    <a routerLink="/signIn" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Sign in</a>
-    <a routerLink="/register" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Register</a>
-    <a routerLink="/standings" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Standings</a>
-    <a routerLink="/matches" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Matches</a>
+    <a *ngIf="!userIsAuthenticated" routerLink="/signIn" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Sign in</a>
+    <a *ngIf="!userIsAuthenticated" routerLink="/register" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Register</a>
+    <a *ngIf="userIsAuthenticated" routerLink="/standings" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Standings</a>
+    <a *ngIf="userIsAuthenticated" routerLink="/matches" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Matches</a>
+    <a *ngIf="userIsAuthenticated" routerLink="/scoreboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Scoreboard</a>
+    <a *ngIf="userIsAuthenticated" routerLink="/signIn" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="onLogout()">Logout</a>
   </div>
 </mat-toolbar>
