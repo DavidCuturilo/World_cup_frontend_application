@@ -1,0 +1,46 @@
+<div class="headline">
+  <h1>Scoreboard</h1>
+</div>
+<div class="scoreTable">
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 scoreboard" matSort (matSortChange)="announceSortChange($event)">
+    <ng-container matColumnDef="position">
+      <th mat-header-cell *matHeaderCellDef>No.</th>
+      <td mat-cell *matCellDef="let element">
+        <p *ngIf="!shouldShowMedal(element.position)">
+          {{ element.position }}.
+        </p>
+        <img
+          *ngIf="shouldShowMedal(element.position)"
+          [src]="getMedal(element.position)"
+          alt=""
+        />
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef>Name</th>
+      <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="lastname">
+      <th mat-header-cell *matHeaderCellDef>Lastname</th>
+      <td mat-cell *matCellDef="let element">{{ element.lastname }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="points">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Points</th>
+      <td mat-cell *matCellDef="let element">{{ element.points }}</td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+  <mat-paginator defer
+    #paginator
+    [length]="length"
+    [pageSize]="defaultSize"
+    [pageSizeOptions]="sizeOptions"
+    aria-label="Select page"
+  >
+  </mat-paginator>
+</div>
