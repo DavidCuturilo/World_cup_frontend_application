@@ -3,4 +3,6 @@ export class UserModel {
   name: string;
   lastname: string;
   username: string;
+  position?: number;
+  points?: number;
 }

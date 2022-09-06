@@ -1,6 +1,6 @@
 <mat-card>
   <mat-card-title>Sign in</mat-card-title>
-  <mat-card-content>
+  <mat-card-content *ngIf="!isLoading">
     <form [formGroup]="signInForm" (ngSubmit)="signIn()">
       <p>
         <mat-form-field>
@@ -33,4 +33,5 @@
       </div>
     </form>
   </mat-card-content>
+  <mat-spinner *ngIf="isLoading"></mat-spinner>
 </mat-card>

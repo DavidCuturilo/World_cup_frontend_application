@@ -1,6 +1,6 @@
 <mat-card>
   <mat-card-title>Register</mat-card-title>
-  <mat-card-content>
+  <mat-card-content *ngIf="!isLoading">
     <form [formGroup]="registerForm" (ngSubmit)="register()">
       <p>
         <mat-form-field>
@@ -53,4 +53,5 @@
       </div>
     </form>
   </mat-card-content>
+  <mat-spinner *ngIf="isLoading"></mat-spinner>
 </mat-card>

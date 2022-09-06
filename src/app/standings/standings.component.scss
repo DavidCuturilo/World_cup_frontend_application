@@ -1,3 +1,11 @@
+.headline {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2rem;
+  color: #622842;
+}
+
 .standings {
   margin: 2rem;
   display: flex;
@@ -16,6 +24,10 @@
   .table {
     width: 50%;
     margin: auto;
+
+    .mat-cell {
+      font-size: 15px;
+    }
 
     .mat-header-row {
       height: 2rem;
@@ -46,6 +58,12 @@
       width: 20%;
       text-align: right;
       padding-right: 2rem;
+    }
+
+    .mat-row {
+      .cdk-column-wins {
+        padding-left: 0.1rem;
+      }
     }
   }
 }

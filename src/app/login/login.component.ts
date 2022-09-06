@@ -1,10 +1,9 @@
 import { LoginUserModel } from './../models/request/login-user.request.model';
-import { EnvService } from './../services/env/env.service';
-import { UserModel } from '../models/user.model';
-import { Component, Injector, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { AuthService } from '../auth/auth.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -14,8 +13,7 @@ import { HttpClient } from '@angular/common/http';
 export class LoginComponent implements OnInit {
   constructor(
     private router: Router,
-    private http: HttpClient,
-    private injector: Injector
+    private authService: AuthService,
   ) {}
 
   signInForm: FormGroup = new FormGroup({
@@ -23,8 +21,8 @@ export class LoginComponent implements OnInit {
     password: new FormControl('', Validators.required),
   });
   errorMessage: string = '';
-  user: UserModel;
-  envService: EnvService = this.injector.get(EnvService);
+  getUserObservable: Subscription;
+  isLoading = false;
 
   ngOnInit(): void {}
 
@@ -34,25 +32,17 @@ export class LoginComponent implements OnInit {
         username: this.signInForm.value.username,
         password: this.signInForm.value.password,
       };
+      this.errorMessage = this.authService.signIn(loginUser);
 
-      this.http
-        .post<UserModel>(`${this.envService.apiURL}/auth/loginUser`, loginUser)
-        .subscribe(
-          (userData) => {
-            this.user = userData;
-            console.log('User ', JSON.stringify(this.user));
-            this.router.navigate(['/standings']);
-          },
-          (error) => {
-            console.log('Error: ', error.status);
-            if (error.status === 401) {
-              this.errorMessage = 'Wrong username or password';
-            }
-          }
-        );
+      if(!this.errorMessage) {
+        console.log('User successfully registered!');
+        this.isLoading = true;
+      }
+
     } else {
       this.errorMessage = 'Username and password can not be empty!';
       console.log('All fields are required!');
     }
   }
+
 }

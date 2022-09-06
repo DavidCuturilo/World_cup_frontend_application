@@ -1,10 +1,9 @@
-import { UserModel } from '../models/user.model';
+import { Subscription } from 'rxjs';
 import { RegisterUserModel } from './../models/request/register-user.request.model';
-import { EnvService } from './../services/env/env.service';
-import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { Component, OnInit, Injector } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { AuthService } from '../auth/auth.service';
 
 @Component({
   selector: 'app-register',
@@ -12,11 +11,7 @@ import { Component, OnInit, Injector } from '@angular/core';
   styleUrls: ['./register.component.scss'],
 })
 export class RegisterComponent implements OnInit {
-  constructor(
-    private router: Router,
-    private http: HttpClient,
-    private injector: Injector
-  ) {}
+  constructor(private router: Router, private authService: AuthService) {}
 
   registerForm: FormGroup = new FormGroup({
     name: new FormControl('', Validators.required),
@@ -27,9 +22,9 @@ export class RegisterComponent implements OnInit {
       Validators.minLength(6),
     ]),
   });
-  errorMessage: string = '';
-  envService: EnvService = this.injector.get(EnvService);
-  user: UserModel;
+  errorMessage: string;
+  getUserObservable: Subscription;
+  isLoading = false;
 
   register() {
     if (this.registerForm.valid) {
@@ -40,26 +35,11 @@ export class RegisterComponent implements OnInit {
         password: this.registerForm.value.password,
       };
 
-      this.http
-        .post<UserModel>(
-          `${this.envService.apiURL}/auth/registerUser`,
-          registerUser
-        )
-        .subscribe(
-          (userData) => {
-            this.user = userData;
-            console.log(
-              'Successfully registered user! User: ',
-              JSON.stringify(this.user)
-            );
-            this.router.navigate(['/standings']);
-          },
-          (error) => {
-            if (error.status === 406) {
-              this.errorMessage = 'Username already taken.';
-            }
-          }
-        );
+      this.errorMessage = this.authService.register(registerUser);
+      if (!this.errorMessage) {
+        console.log('Successfully registered user!');
+        this.isLoading = true;
+      }
     } else {
       this.errorMessage = 'All fields are required!';
     }
