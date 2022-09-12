@@ -1,9 +1,16 @@
-import { TransformFlag } from './../enums/transform-flag.enum';
+import { SavePredictionRequestModel } from './../models/request/save-prediction.request.model';
+import { DialogDataModel } from './../prediction-of-results-modal/model/dialog-data.model';
+import { MatchesService } from './matches.service';
+import { PredictionOfResultsModalComponent } from './../prediction-of-results-modal/prediction-of-results-modal.component';
 import { MatchesInfo } from './../models/response/get-matches-by-round.response.model';
-import { GetMatchesByRoundResponseDto } from './../../../../world_cup_backend/src/services/world-cup/dto/get-matches-by-round.response.dto';
 import { EnvService } from './../services/env/env.service';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, Injector } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { MatchStatus } from '../enums/match-status.enum';
+import jwt_decode from 'jwt-decode';
+import { AuthService } from '../auth/auth.service';
+import { GeneralHelper } from '../helpers/general-helper.service';
 
 @Component({
   selector: 'app-matches',
@@ -13,13 +20,18 @@ import { Component, OnInit, Injector } from '@angular/core';
 export class MatchesComponent implements OnInit {
   constructor(
     private readonly http: HttpClient,
-    private readonly injector: Injector
+    private readonly injector: Injector,
+    public dialog: MatDialog,
+    private authService: AuthService,
+    private matchService: MatchesService,
+    private generalHelper: GeneralHelper
   ) {}
 
   envService: EnvService = this.injector.get(EnvService);
   events: MatchesInfo[];
   round: number = 1;
-  slugName = 'group-faze'
+  selected = 'Round 1';
+  slugName = 'group-faze';
   rounds = [
     { value: 'Round 1' },
     { value: 'Round 2' },
@@ -29,91 +41,109 @@ export class MatchesComponent implements OnInit {
     { value: 'Semifinal' },
     { value: 'Final' },
   ];
+  dialogData: DialogDataModel;
+  dialogResponseData: DialogDataModel;
+  userId: number;
+  jwtToken;
 
-  selected = 'Round 1';
-
-  ngOnInit(): void {
-    this.http
-      .get<GetMatchesByRoundResponseDto>(
-        `${this.envService.apiURL}/world-cup/matchesByRound?round=${this.round}&slugName=${this.slugName}`
-      )
-      .subscribe(
-        (data) => {
-          this.events = data.events;
-          console.log('Events: ' + this.events);
-        },
-        (error) => {
-          console.log('Error getting matches by round: ' + this.round);
-        }
+  async ngOnInit(): Promise<void> {
+    try {
+      let matches = await this.matchService.getMatchesByRound(
+        this.round,
+        this.slugName
       );
+      this.events = matches.events;
+    } catch (error) {
+      console.log('Error getting matches by round: ' + this.round);
+    }
+    this.jwtToken = jwt_decode(this.authService.getToken());
+    this.userId = this.jwtToken?.sub;
   }
 
   getDate(timestamp: number) {
-    timestamp = timestamp * 1000;
-    const date = new Date(timestamp + 1 * 3600 * 1000).toISOString().split('T');
-    const day = date[0];
-    return day;
+    return this.generalHelper.getDate(timestamp);
   }
 
   getTime(timestamp: number) {
-    timestamp = timestamp * 1000;
-    const date = new Date(timestamp + 1 * 3600 * 1000).toISOString().split('T');
-    const time = date[1].replace(':00.000Z', '');
-    return time;
+    return this.generalHelper.getTime(timestamp);
   }
 
   getImage(nameCode: string) {
-    return '../../assets/flags/' + TransformFlag[nameCode];
+    return this.generalHelper.getImage(nameCode);
   }
 
-  getMatchesByRound(round: string) {
+  async getMatchesByRound(round: string) {
     const selectedRound = this.getRound(round);
-    console.log('Selected round: '+selectedRound);
-    this.http
-    .get<GetMatchesByRoundResponseDto>(
-      `${this.envService.apiURL}/world-cup/matchesByRound?round=${selectedRound.round}&slugName=${selectedRound.slugName}`
-    )
-    .subscribe(
-      (data) => {
-        this.events = data.events;
-        console.log('Events: ' + this.events);
-      },
-      (error) => {
-        console.log('Error getting matches by round: ' + selectedRound);
-      }
-    );
+    try {
+      let matches = await this.matchService.getMatchesByRound(
+        selectedRound.round,
+        selectedRound.slugName
+      );
+      this.events = matches.events;
+    } catch (error) {
+      console.log('Error getting matches by round: ' + this.round);
+    }
   }
 
   getRound(round: string) {
-    const slugName = round.toLowerCase().replace(/ /g,'-');
-    switch(round) {
-      case 'Round 1':
-      case 'Round 2':
-      case 'Round 3':
-        return {
-          round: round.split(' ')[1],
-          slugName: 'group-faze'
-        }
-      case 'Round of 16':
-        return {
-          round: 8,
-          slugName
-        }
-      case 'Quarterfinal':
-        return {
-          round: 4,
-          slugName
-        }
-      case 'Semifinal':
-        return {
-          round: 2,
-          slugName
-        }
-      case 'Final':
-        return {
-          round: 1,
-          slugName
-        }
-    }
+    return this.generalHelper.getRound(round);
+  }
+
+  showMatchResult(match: MatchesInfo) {
+    // return true;
+    return match.status.description != MatchStatus.NOT_STARTED;
+  }
+
+  matchStarted(match: MatchesInfo) {
+    return match.status.description != MatchStatus.NOT_STARTED ? 'started' : 'group';
+  }
+
+  async openDialog(match: MatchesInfo) {
+    const prediction = await this.matchService.getPrediction(
+      this.userId,
+      match.customId
+    );
+
+    this.dialogData = {
+      id: match.customId,
+      homeTeam: match.homeTeam.name,
+      homeNameCode: match.homeTeam.nameCode,
+      homeScore: prediction?.homeScore,
+      awayTeam: match.awayTeam.name,
+      awayNameCode: match.awayTeam.nameCode,
+      awayScore: prediction?.awayScore,
+      isStarted:
+        match.status.description === MatchStatus.NOT_STARTED ? false : true,
+      startingDate: this.getDate(match.startTimestamp),
+      startingTime: this.getTime(match.startTimestamp),
+      status: match.status.description as MatchStatus,
+    };
+    const dialogRef = this.dialog.open(PredictionOfResultsModalComponent, {
+      width: '30%',
+      height: '30%',
+      data: this.dialogData,
+    });
+
+    dialogRef.afterClosed().subscribe((result: DialogDataModel) => {
+      this.dialogResponseData = result;
+      if (
+        this.dialogResponseData &&
+        (this.dialogResponseData.homeScore || this.dialogResponseData.awayScore)
+      ) {
+        const homeScore = this.dialogResponseData.homeScore ?? 0;
+        const awayScore = this.dialogResponseData.awayScore ?? 0;
+        let prediction: SavePredictionRequestModel = {
+          homeScore,
+          awayScore,
+          winnerCode: this.generalHelper.getMatchWinner(
+            this.dialogResponseData?.homeScore,
+            this.dialogResponseData.awayScore
+          ),
+          user: { id: this.userId },
+          match: { id: result.id },
+        };
+        this.matchService.savePrediction(prediction);
+      }
+    });
   }
 }

@@ -40,6 +40,7 @@
     -moz-box-shadow: 0px 0px 5px 0px rgba(98, 40, 66, 1);
     box-shadow: 0px 0px 5px 0px rgba(98, 40, 66, 1);
     border-radius: 1rem;
+    cursor: pointer;
 
     .group-info {
       display: flex;
@@ -100,6 +101,17 @@
             height: 1.5rem;
             margin: 0.2rem;
           }
+
+          .home-score {
+            width: 10%;
+            text-align: left;
+            font-size: 1.1rem;
+          }
+
+          .away-score {
+            @extend .home-score;
+            text-align: center;
+          }
         }
 
         .vs {
@@ -107,5 +119,12 @@
         }
       }
     }
+  }
+
+  .started {
+    @extend .group;
+    opacity: 75%;
+    pointer-events: none;
+    cursor: none;
   }
 }

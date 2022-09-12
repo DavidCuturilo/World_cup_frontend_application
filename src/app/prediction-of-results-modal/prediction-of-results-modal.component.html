@@ -1,0 +1,22 @@
+<h1 mat-dialog-title class="title" cdkFocusInitial>Prediction for match</h1>
+<h2 class="timestamp" *ngIf="!matchStarted()">Starting date: {{data.startingDate}} at {{data.startingTime}}h</h2>
+<h2 class="timestamp" *ngIf="matchStarted()">{{ data.status }}</h2>
+<div mat-dialog-content class="modal-body">
+  <div appearance="fill" class="modal-content">
+    <div class="team">
+      <img [src]="getImage(data.homeNameCode)" alt="" />
+      <mat-label class="team-name">{{ data.homeTeam }}</mat-label>
+      <input type="number" min="0" matInput class="modal-input" [(ngModel)]="data.homeScore" [disabled]="data.isStarted">
+    </div>
+    <span class="vs">vs</span>
+    <div class="team">
+      <input type="number" min="0" matInput class="modal-input" [(ngModel)]="data.awayScore" [disabled]="data.isStarted">
+      <mat-label class="team-name">{{ data.awayTeam }}</mat-label>
+      <img [src]="getImage(data.awayNameCode)" alt="" />
+    </div>
+  </div>
+</div>
+<div mat-dialog-actions class="modal-actions">
+  <button mat-button class="modal-button" (click)="onCancel()"><span>Cancel</span><mat-icon>close</mat-icon></button>
+  <button mat-button class="modal-button" (click)="closeDialog()"  [disabled]="data.isStarted"><span>Save</span><mat-icon>check</mat-icon></button>
+</div>
