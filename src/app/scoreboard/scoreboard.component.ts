@@ -1,7 +1,6 @@
-import { lastValueFrom } from 'rxjs';
+import { ScoreboardService } from './scoreboard.service';
 import { UserModel } from './../models/user.model';
 import { EnvService } from './../services/env/env.service';
-import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, Injector, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
@@ -15,9 +14,9 @@ import { LiveAnnouncer } from '@angular/cdk/a11y';
 })
 export class ScoreboardComponent implements OnInit {
   constructor(
-    private readonly http: HttpClient,
     private readonly injector: Injector,
-    private _liveAnnouncer: LiveAnnouncer
+    private _liveAnnouncer: LiveAnnouncer,
+    private scoreboardService: ScoreboardService
   ) {}
 
   envService: EnvService = this.injector.get(EnvService);
@@ -34,24 +33,24 @@ export class ScoreboardComponent implements OnInit {
 
   displayedColumns: string[] = ['position', 'name', 'lastname', 'points'];
 
-  ngOnInit(): void {
-    lastValueFrom(
-      this.http.get<UserModel[]>(`${this.envService.apiURL}/webapp/users`)
-    ).then((data) => {
-      this.users = data.map((user) => {
+  async ngOnInit(): Promise<void> {
+    try {
+      const users = await this.scoreboardService.getUsers();
+      this.users = users.map((user) => {
         return {
           ...user,
-          points: user.points,
-          position: data.indexOf(user) + 1,
+          position: users.indexOf(user) + 1,
         };
       });
-      this.length = this.users.length;
-      this.dataSource = new MatTableDataSource(this.users);
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-    }).catch((error) => {
+
+    } catch (error) {
       console.log('Error getting users, error: ' + error);
-    });
+    }
+
+    this.length = this.users.length;
+    this.dataSource = new MatTableDataSource(this.users);
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
   }
 
   shouldShowMedal(position: number) {
