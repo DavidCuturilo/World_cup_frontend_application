@@ -26,16 +26,16 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  signIn() {
+  async signIn() {
     if (this.signInForm.valid) {
       const loginUser: LoginUserModel = {
         username: this.signInForm.value.username,
         password: this.signInForm.value.password,
       };
-      this.errorMessage = this.authService.signIn(loginUser);
+      this.errorMessage = await this.authService.signIn(loginUser);
 
       if(!this.errorMessage) {
-        console.log('User successfully registered!');
+        console.log('User successfully loggedIn!');
         this.isLoading = true;
       }
 

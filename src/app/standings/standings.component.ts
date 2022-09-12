@@ -1,5 +1,9 @@
-import { TransformFlag } from './../enums/transform-flag.enum';
-import { GetStandingsResponseDto, StandingsInfo } from './../../../../world_cup_backend/src/services/world-cup/dto/get-standings.response.dto';
+import { GeneralHelper } from './../helpers/general-helper.service';
+import {
+  GetStandingsResponseModel,
+  StandingsInfo,
+} from './model/response/get-standings.response.model';
+import { lastValueFrom } from 'rxjs';
 import { EnvService } from './../services/env/env.service';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, Injector } from '@angular/core';
@@ -10,6 +14,12 @@ import { Component, OnInit, Injector } from '@angular/core';
   styleUrls: ['./standings.component.scss'],
 })
 export class StandingsComponent implements OnInit {
+  constructor(
+    private readonly http: HttpClient,
+    private readonly injector: Injector,
+    private readonly generalHelper: GeneralHelper
+  ) {}
+
   standings: StandingsInfo[];
   envService: EnvService = this.injector.get(EnvService);
   displayedColumns: string[] = [
@@ -22,26 +32,23 @@ export class StandingsComponent implements OnInit {
     'losses',
     'points',
   ];
-  nameCode = '../../assets/flags/argentina.png'
-
-  getImage(nameCode: string){
-    return '../../assets/flags/'+TransformFlag[nameCode];
-  }
-
-  constructor(
-    private readonly http: HttpClient,
-    private readonly injector: Injector
-  ) {}
 
   ngOnInit(): void {
-    this.http
-      .get<GetStandingsResponseDto>(
+    lastValueFrom(
+      this.http.get<GetStandingsResponseModel>(
         `${this.envService.apiURL}/world-cup/standings`
       )
-      .subscribe((data) => {
+    )
+      .then((data) => {
         this.standings = data.standings;
-
         console.log('Standings: ', this.standings);
+      })
+      .catch((error) => {
+        console.log('Error ocurred while getting standings, error: ' + error);
       });
+  }
+
+  getImage(nameCode: string) {
+    return this.generalHelper.getImage(nameCode);
   }
 }

@@ -18,6 +18,7 @@ import { StandingsComponent } from './standings/standings.component';
 import { MatchesComponent } from './matches/matches.component';
 import { ScoreboardComponent } from './scoreboard/scoreboard.component';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
+import { PredictionOfResultsModalComponent } from './prediction-of-results-modal/prediction-of-results-modal.component';
 
 @NgModule({
   declarations: [
@@ -29,6 +30,7 @@ import { AuthInterceptor } from './interceptors/auth.interceptor';
     StandingsComponent,
     MatchesComponent,
     ScoreboardComponent,
+    PredictionOfResultsModalComponent,
   ],
   imports: [
     BrowserModule,

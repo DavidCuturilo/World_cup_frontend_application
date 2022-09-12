@@ -15,8 +15,8 @@ export class MatchesInfo {
   winnerCode: number;
   homeTeam: Team;
   awayTeam: Team;
-  homeScore: Record<string, unknown>;
-  awayScore: Record<string, unknown>;
+  homeScore: ScoreInfo;
+  awayScore: ScoreInfo;
   startTimestamp: number;
 }
 
@@ -40,4 +40,8 @@ class TeamColors {
   primary: string;
   secondary: string;
   text: string;
+}
+class ScoreInfo {
+  current: number;
+  normaltime: number;
 }

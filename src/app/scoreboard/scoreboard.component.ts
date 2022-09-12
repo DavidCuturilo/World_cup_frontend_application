@@ -1,3 +1,4 @@
+import { lastValueFrom } from 'rxjs';
 import { UserModel } from './../models/user.model';
 import { EnvService } from './../services/env/env.service';
 import { HttpClient } from '@angular/common/http';
@@ -34,26 +35,23 @@ export class ScoreboardComponent implements OnInit {
   displayedColumns: string[] = ['position', 'name', 'lastname', 'points'];
 
   ngOnInit(): void {
-    this.http
-      .get<UserModel[]>(`${this.envService.apiURL}/webapp/users`)
-      .subscribe(
-        (data) => {
-          this.users = data.map((user) => {
-            return {
-              ...user,
-              position: data.indexOf(user) + 1,
-              points: user.id
-            };
-          });
-          this.length = this.users.length;
-          this.dataSource = new MatTableDataSource(this.users);
-          this.dataSource.paginator = this.paginator;
-          this.dataSource.sort = this.sort;
-        },
-        (error) => {
-          console.log('Error getting users, error: ' + error);
-        }
-      );
+    lastValueFrom(
+      this.http.get<UserModel[]>(`${this.envService.apiURL}/webapp/users`)
+    ).then((data) => {
+      this.users = data.map((user) => {
+        return {
+          ...user,
+          points: user.points,
+          position: data.indexOf(user) + 1,
+        };
+      });
+      this.length = this.users.length;
+      this.dataSource = new MatTableDataSource(this.users);
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+    }).catch((error) => {
+      console.log('Error getting users, error: ' + error);
+    });
   }
 
   shouldShowMedal(position: number) {
@@ -71,7 +69,7 @@ export class ScoreboardComponent implements OnInit {
     if (sortState.direction) {
       this._liveAnnouncer.announce(`Sorted ${sortState.direction}ending`);
     } else {
-      this._liveAnnouncer.announce(`Sorting cleared`)
+      this._liveAnnouncer.announce(`Sorting cleared`);
     }
   }
 }

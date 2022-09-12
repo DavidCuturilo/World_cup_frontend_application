@@ -1,11 +1,11 @@
+import { RegisterUserModel } from './../models/request/register-user.request.model';
 import { Router } from '@angular/router';
-import { RegisterUserRequestDto } from './../../../../world_cup_backend/src/auth/dto/register-user.request.dto';
-import { UserModel } from './../models/user.model';
 import { EnvService } from './../services/env/env.service';
 import { HttpClient } from '@angular/common/http';
 import { Injectable, Injector } from '@angular/core';
 import { LoginUserModel } from '../models/request/login-user.request.model';
-import { Subject } from 'rxjs';
+import { Subject, lastValueFrom } from 'rxjs';
+
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -34,13 +34,12 @@ export class AuthService {
     return this.isAuthenticated;
   }
 
-  signIn(loginUser: LoginUserModel) {
-    this.http
+  async signIn(loginUser: LoginUserModel) {
+    const response = await lastValueFrom(this.http
       .post<{ access_token: string; expiresIn: number }>(
         `${this.envService.apiURL}/auth/loginUser`,
         loginUser
-      )
-      .subscribe((response) => {
+      )).then((response) => {
         const access_token = response.access_token;
         this.access_token = access_token;
         if (access_token) {
@@ -58,23 +57,21 @@ export class AuthService {
 
           this.router.navigate(['/standings']);
         }
-      }),
-      (error) => {
+      }).catch((error) => {
         if (error.status === 401) {
           this.errorMessage = 'Wrong username or password';
         }
-      };
-
+        console.log("Error message: "+this.errorMessage);
+      });
     return this.errorMessage;
   }
 
-  register(registerUser: RegisterUserRequestDto) {
-    this.http
+  async register(registerUser: RegisterUserModel) {
+    const response = await lastValueFrom(    this.http
       .post<{ access_token: string; expiresIn: number }>(
         `${this.envService.apiURL}/auth/registerUser`,
         registerUser
-      )
-      .subscribe((response) => {
+      )).then((response) => {
         const access_token = response.access_token;
         this.access_token = access_token;
         if (access_token) {
@@ -92,13 +89,11 @@ export class AuthService {
 
           this.router.navigate(['/standings']);
         }
-      }),
-      (error) => {
+      }).catch((error) => {
         if (error.status === 406) {
           this.errorMessage = 'Username already taken.';
         }
-      };
-
+      })
     return this.errorMessage;
   }
 

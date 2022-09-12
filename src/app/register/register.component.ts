@@ -26,7 +26,7 @@ export class RegisterComponent implements OnInit {
   getUserObservable: Subscription;
   isLoading = false;
 
-  register() {
+  async register() {
     if (this.registerForm.valid) {
       const registerUser: RegisterUserModel = {
         name: this.registerForm.value.name,
@@ -35,7 +35,7 @@ export class RegisterComponent implements OnInit {
         password: this.registerForm.value.password,
       };
 
-      this.errorMessage = this.authService.register(registerUser);
+      this.errorMessage = await this.authService.register(registerUser);
       if (!this.errorMessage) {
         console.log('Successfully registered user!');
         this.isLoading = true;

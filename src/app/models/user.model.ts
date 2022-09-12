@@ -4,5 +4,5 @@ export class UserModel {
   lastname: string;
   username: string;
   position?: number;
-  points?: number;
+  points: number;
 }
