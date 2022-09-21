@@ -1,0 +1,32 @@
+.section {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 25rem;
+
+  .information {
+    width: 30%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+    .not-found {
+      font-size: 3rem;
+      color: #622842;
+      margin-bottom: 2rem;
+    }
+
+    .signIn {
+      font-size: 1rem;
+      color: #622842;
+      border: solid 0.1rem;
+      border-color: #622842;
+      border-radius: 0.2rem;
+      background-color: #fafafa;
+      padding: auto;
+      cursor: pointer;
+    }
+  }
+}

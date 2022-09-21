@@ -1,12 +1,8 @@
 import { GeneralHelper } from './../helpers/general-helper.service';
-import {
-  GetStandingsResponseModel,
-  StandingsInfo,
-} from './model/response/get-standings.response.model';
-import { lastValueFrom } from 'rxjs';
+import { StandingsInfo } from './model/response/get-standings.response.model';
 import { EnvService } from './../services/env/env.service';
-import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, Injector } from '@angular/core';
+import { StandingsService } from './standings.service';
 
 @Component({
   selector: 'app-standings',
@@ -15,9 +11,9 @@ import { Component, OnInit, Injector } from '@angular/core';
 })
 export class StandingsComponent implements OnInit {
   constructor(
-    private readonly http: HttpClient,
     private readonly injector: Injector,
-    private readonly generalHelper: GeneralHelper
+    private readonly generalHelper: GeneralHelper,
+    private readonly standingsService: StandingsService
   ) {}
 
   standings: StandingsInfo[];
@@ -33,19 +29,13 @@ export class StandingsComponent implements OnInit {
     'points',
   ];
 
-  ngOnInit(): void {
-    lastValueFrom(
-      this.http.get<GetStandingsResponseModel>(
-        `${this.envService.apiURL}/world-cup/standings`
-      )
-    )
-      .then((data) => {
-        this.standings = data.standings;
-        console.log('Standings: ', this.standings);
-      })
-      .catch((error) => {
-        console.log('Error ocurred while getting standings, error: ' + error);
-      });
+  async ngOnInit(): Promise<void> {
+    try {
+      const response = await this.standingsService.getStandings();
+      this.standings = response.standings;
+    } catch (error) {
+      console.log('Error getting standings, error: ' + error);
+    }
   }
 
   getImage(nameCode: string) {
