@@ -38,3 +38,26 @@ mat-spinner {
   margin: auto;
   margin-top: 1rem;
 }
+
+@media (max-width: 400px) {
+  :host {
+    margin-top: 14rem;
+  }
+
+  mat-card {
+    height: 400px;
+    width: 70%;
+
+    mat-card-content {
+      p {
+        height: 60px;
+      }
+    }
+  }
+
+  mat-form-field {
+    width: 100%;
+    min-width: 250px;
+  }
+
+}

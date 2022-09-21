@@ -3,12 +3,15 @@
     <img src="../../assets/qatar.flag.png" alt="">
     <span>World cup Qatar 2022</span>
   </div>
-  <div class="nav-items">
-    <a *ngIf="!userIsAuthenticated" routerLink="/signIn" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Sign in</a>
-    <a *ngIf="!userIsAuthenticated" routerLink="/register" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Register</a>
-    <a *ngIf="userIsAuthenticated" routerLink="/standings" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Standings</a>
-    <a *ngIf="userIsAuthenticated" routerLink="/matches" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Matches</a>
-    <a *ngIf="userIsAuthenticated" routerLink="/scoreboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Scoreboard</a>
-    <a *ngIf="userIsAuthenticated" routerLink="/signIn" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="onLogout()">Logout</a>
+  <div class="burger" (click)="toggleMenu()">
+    <mat-icon class="mat-18">{{ isMenuOpen ? "close" : "menu" }}</mat-icon>
+  </div>
+  <div class="nav-items" [ngClass]="getAuthorizationClass()" [class.is-open]="isMenuOpen">
+    <a (click)="toggleMenu()" class="authorize" *ngIf="!userIsAuthenticated" routerLink="/signIn" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Sign in</a>
+    <a (click)="toggleMenu()" class="authorize" *ngIf="!userIsAuthenticated" routerLink="/register" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Register</a>
+    <a (click)="toggleMenu()" *ngIf="userIsAuthenticated" routerLink="/standings" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Standings</a>
+    <a (click)="toggleMenu()" *ngIf="userIsAuthenticated" routerLink="/matches" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Matches</a>
+    <a (click)="toggleMenu()" *ngIf="userIsAuthenticated" routerLink="/scoreboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Scoreboard</a>
+    <a (click)="toggleMenu()" *ngIf="userIsAuthenticated" routerLink="/signIn" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="onLogout()">Logout</a>
   </div>
 </mat-toolbar>

@@ -4,13 +4,15 @@ import {
   HttpInterceptor,
   HttpRequest,
 } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
+import { EnvService } from '../services/env/env.service';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private injector: Injector) {}
+  envService: EnvService = this.injector.get(EnvService);
 
   intercept(
     request: HttpRequest<any>,
@@ -22,6 +24,7 @@ export class AuthInterceptor implements HttpInterceptor {
       setHeaders: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
+        world_cup_api_key: this.envService.world_cup_api_key,
       },
     });
     return next.handle(authRequest);

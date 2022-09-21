@@ -10,6 +10,7 @@ import { AuthService } from '../auth/auth.service';
 export class HeaderComponent implements OnInit, OnDestroy {
   private authListenerSubs: Subscription;
   userIsAuthenticated = false;
+  isMenuOpen = false;
 
   constructor(private authService: AuthService) { }
 
@@ -24,8 +25,18 @@ export class HeaderComponent implements OnInit, OnDestroy {
     })
   }
 
+  getAuthorizationClass() {
+    if (!this.userIsAuthenticated) {
+      return 'unauthorized'
+    }
+  }
+
   ngOnDestroy(): void {
     this.authListenerSubs.unsubscribe();
+  }
+
+  toggleMenu() {
+    this.isMenuOpen = !this.isMenuOpen;
   }
 
 }

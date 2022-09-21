@@ -38,6 +38,7 @@
           <span class="away-team-name">{{ group.awayTeam.name }}</span>
           <img [src]="getImage(group.awayTeam.nameCode)" alt="" />
         </div>
+        <mat-icon *ngIf="enteredPrediction(group)" matTooltip="There is a prediction for this match" matTooltipPosition="above">playlist_add_check</mat-icon>
       </div>
     </div>
   </div>

@@ -4,13 +4,13 @@ import { MatchesService } from './matches.service';
 import { PredictionOfResultsModalComponent } from './../prediction-of-results-modal/prediction-of-results-modal.component';
 import { MatchesInfo } from './../models/response/get-matches-by-round.response.model';
 import { EnvService } from './../services/env/env.service';
-import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, Injector } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatchStatus } from '../enums/match-status.enum';
 import jwt_decode from 'jwt-decode';
 import { AuthService } from '../auth/auth.service';
 import { GeneralHelper } from '../helpers/general-helper.service';
+import { GetPredictionsResponseModel } from '../models/response/get-predictions-response.model';
 
 @Component({
   selector: 'app-matches',
@@ -19,7 +19,6 @@ import { GeneralHelper } from '../helpers/general-helper.service';
 })
 export class MatchesComponent implements OnInit {
   constructor(
-    private readonly http: HttpClient,
     private readonly injector: Injector,
     public dialog: MatDialog,
     private authService: AuthService,
@@ -45,6 +44,7 @@ export class MatchesComponent implements OnInit {
   dialogResponseData: DialogDataModel;
   userId: number;
   jwtToken;
+  allPredictions: GetPredictionsResponseModel[];
 
   async ngOnInit(): Promise<void> {
     try {
@@ -58,6 +58,14 @@ export class MatchesComponent implements OnInit {
     }
     this.jwtToken = jwt_decode(this.authService.getToken());
     this.userId = this.jwtToken?.sub;
+
+    try {
+      this.allPredictions = await this.matchService.getAllPredictions(
+        this.userId
+      );
+    } catch (error) {
+      console.log('Error while getting all predictions, error: ' + error);
+    }
   }
 
   getDate(timestamp: number) {
@@ -90,12 +98,20 @@ export class MatchesComponent implements OnInit {
   }
 
   showMatchResult(match: MatchesInfo) {
-    // return true;
     return match.status.description != MatchStatus.NOT_STARTED;
   }
 
   matchStarted(match: MatchesInfo) {
-    return match.status.description != MatchStatus.NOT_STARTED ? 'started' : 'group';
+    return match.status.description != MatchStatus.NOT_STARTED
+      ? 'started'
+      : 'group';
+  }
+
+  enteredPrediction(match: MatchesInfo) {
+    const exist = this.allPredictions?.find(
+      (prediction) => prediction.match.id === match.customId
+    );
+    return exist != undefined;
   }
 
   async openDialog(match: MatchesInfo) {
@@ -105,7 +121,7 @@ export class MatchesComponent implements OnInit {
     );
 
     this.dialogData = {
-      id: match.customId,
+      customId: match.customId,
       homeTeam: match.homeTeam.name,
       homeNameCode: match.homeTeam.nameCode,
       homeScore: prediction?.homeScore,
@@ -140,9 +156,10 @@ export class MatchesComponent implements OnInit {
             this.dialogResponseData.awayScore
           ),
           user: { id: this.userId },
-          match: { id: result.id },
+          match: { id: result.customId },
         };
         this.matchService.savePrediction(prediction);
+        this.ngOnInit();
       }
     });
   }

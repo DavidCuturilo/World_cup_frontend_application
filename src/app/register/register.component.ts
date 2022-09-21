@@ -1,6 +1,5 @@
 import { Subscription } from 'rxjs';
 import { RegisterUserModel } from './../models/request/register-user.request.model';
-import { Router } from '@angular/router';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../auth/auth.service';
@@ -11,17 +10,9 @@ import { AuthService } from '../auth/auth.service';
   styleUrls: ['./register.component.scss'],
 })
 export class RegisterComponent implements OnInit {
-  constructor(private router: Router, private authService: AuthService) {}
+  constructor(private authService: AuthService) {}
 
-  registerForm: FormGroup = new FormGroup({
-    name: new FormControl('', Validators.required),
-    lastname: new FormControl('', Validators.required),
-    username: new FormControl('', Validators.required),
-    password: new FormControl('', [
-      Validators.required,
-      Validators.minLength(6),
-    ]),
-  });
+  registerForm: FormGroup;
   errorMessage: string;
   getUserObservable: Subscription;
   isLoading = false;
@@ -41,9 +32,28 @@ export class RegisterComponent implements OnInit {
         this.isLoading = true;
       }
     } else {
-      this.errorMessage = 'All fields are required!';
+      if (
+        !this.registerForm.value.password ||
+        !this.registerForm.value.name ||
+        !this.registerForm.value.lastname ||
+        !this.registerForm.value.username
+      ) {
+        this.errorMessage = 'All fields are required!';
+      } else if (this.registerForm.value.password.length < 6) {
+        this.errorMessage = 'Password must have 6 or more characters!';
+      }
     }
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.registerForm = new FormGroup({
+      name: new FormControl('', Validators.required),
+      lastname: new FormControl('', Validators.required),
+      username: new FormControl('', Validators.required),
+      password: new FormControl('', [
+        Validators.required,
+        Validators.minLength(6),
+      ]),
+    });
+  }
 }

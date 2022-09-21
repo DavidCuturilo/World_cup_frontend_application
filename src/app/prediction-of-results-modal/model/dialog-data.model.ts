@@ -1,7 +1,7 @@
 import { MatchStatus } from "src/app/enums/match-status.enum";
 
 export interface DialogDataModel {
-  id: string;
+  customId: string;
   homeTeam: string;
   homeNameCode: string;
   homeScore: number;
